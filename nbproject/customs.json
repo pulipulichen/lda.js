@@ -1,0 +1,17 @@
+{
+  "elements": {},
+  "attributes": {
+    "v-bind:class": {
+      "context": "a"
+    },
+    "v-if": {
+      "context": "div"
+    },
+    "v-show": {
+      "context": "div"
+    },
+    "v-model": {
+      "context": "select"
+    }
+  }
+}
