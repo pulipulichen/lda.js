@@ -94,3 +94,65 @@ body {
 body {
   height: auto !important;
 }
+
+.loading-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  user-select: none;
+  cursor: wait;
+  text-align: center;
+  
+  img {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+  }
+}
+
+.table-column {
+  max-height: calc(100vh - 45rem);
+  min-height: 10rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.table-row {
+  max-height: calc(100vh - 30rem);
+  min-height: 10rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  
+  .table-column {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+input[type="number"] {
+  width: 6rem !important;
+}
+
+.menu-padding {
+  height: 2rem;
+}
+
+.lines .prob {
+  display:table-cell;
+  width:100px;
+  padding-right:5px;
+  
+  position: relative;
+  top: -0.3rem;
+}

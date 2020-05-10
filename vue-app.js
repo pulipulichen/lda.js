@@ -1,4 +1,4 @@
-/* global XLSX */
+/* global XLSX, lda */
 
 let postMessageAPI = PuliPostMessageAPI({
   manuallyReady: true
@@ -8,12 +8,16 @@ var app = new Vue({
   el: '#app',
   data: {
     inputText: ``,
-    topicNumber: 4,
+    configTopicNumber: 4,
+    configAlpha: 0.1,
+    configBeta: 0.01,
+    configTop: 100,
     processOutputWait: false,
     displayPanel: 'topic',
     //displayPanel: 'configuration',
     persistKey: 'lda-js.' + location.href,
-    configChanged: false
+    configChanged: false,
+    topicTerms: []
   },
   computed: {
     searchParams () {
@@ -34,7 +38,7 @@ var app = new Vue({
     //console.log(this.searchParams.api)
     if (!this.searchParams.api) {
       setTimeout(() => {
-        $.get('email.txt', (text) => {
+        $.get('email-segment.txt', (text) => {
           this.inputText = text
           this.processOutput()
         })
@@ -43,7 +47,16 @@ var app = new Vue({
     }
   },
   watch: {
-    topicNumber () {
+    configTopicNumber () {
+      this.persist()
+    },
+    configAlpha () {
+      this.persist()
+    },
+    configBeta () {
+      this.persist()
+    },
+    configTop () {
       this.persist()
     },
   },
@@ -68,7 +81,10 @@ var app = new Vue({
       this.configChanged = true
       let key = this.persistKey
       let data = {
-        topicNumber: this.topicNumber,
+        configTopicNumber: this.configTopicNumber,
+        configAlpha: this.configAlpha,
+        configBeta: this.configBeta,
+        configTop: this.configTop,
       }
       localStorage.setItem(key, JSON.stringify(data))
     },
@@ -246,24 +262,173 @@ var app = new Vue({
       }
       this.configStopWords = this.fullStopWords
     },
-    copyOutput () {
-      this.$refs.outputCopyTextarea.select()
-      document.execCommand("Copy")
-    },
     saveAsSheet () {
       console.error('@TODO')
     },
-    drawWordCloud (text) {
-      let url = 'https://pulipulichen.github.io/d3-cloud/index.html'
-      //let url = 'http://localhost:8383/d3-cloud/index.html'
+    copyTopic (array) {
+      console.error('@TODO', array)
+    },
+    drawWordCloud (array) {
+      //let url = 'https://pulipulichen.github.io/d3-cloud/index.html'
+      let url = 'http://localhost:8383/d3-cloud/index.html'
       //let url = 'http://pc.pulipuli.info:8383/d3-cloud/index.html'
       
-      postMessageAPI.send(url, text, {
-        mode: 'popup'
+      let text = []
+      array.forEach(({term, prob}) => {
+        for (let i = 0; i < Math.ceil(prob / 100); i++ ) {
+          text.push(term)
+        }
+      })
+      
+      postMessageAPI.send(url, text.join(' '), {
+        mode: 'popup',
+        newWindow: true
       })
     },
+    isEnglishNumberWord (word) {
+      var english = /^[A-Za-z0-9]*$/;
+      return english.test(word)
+    },
     processOutput: async function () {
-      console.error('@TODO')
+      //console.log("analysing "+sentences.length+" sentences...");
+      this.processOutputWait = true
+      var documents = new Array();
+      var f = {};
+      var vocab = new Array();
+      var docCount = 0;
+      let sentences = this.inputText.split('\n')
+      
+      for (var i = 0; i < sentences.length; i++) {
+        if (sentences[i] === "") {
+          continue;
+        }
+        var words = sentences[i].split(/[\s,\"]+/);
+        if (!words)
+          continue;
+        var wordIndices = new Array();
+        for (var wc = 0; wc < words.length; wc++) {
+          var w = words[wc].toLowerCase()
+          if (this.isEnglishNumberWord(w)) {
+            w = stemmer(w, false)
+          } 
+          if (w === "" || w.length === 1 || w.indexOf("http") === 0) {
+            continue
+          }
+          if (f[w]) {
+            f[w] = f[w] + 1;
+          } else if (w) {
+            f[w] = 1;
+            vocab.push(w);
+          }
+          ;
+          wordIndices.push(vocab.indexOf(w));
+        }
+        if (wordIndices && wordIndices.length > 0) {
+          documents[docCount++] = wordIndices;
+        }
+        
+        if (i > 0 && i % 100 === 0) {
+          await this.sleep()
+        }
+      }
+
+      var V = vocab.length;
+      var M = documents.length;
+      var K = this.configTopicNumber
+      var alpha = Number(this.configAlpha) //0.1;  // per-document distributions over topics
+      var beta = Number(this.configBeta) // .01;  // per-topic distributions over words
+      //var alpha = 0.1
+      //var beta = 0.01
+      
+      //console.log('lda', 1)
+      lda.configure(documents, V, 10000, 2000, 100, 10);
+      //console.log('lda', 2)
+      await lda.gibbs(K, alpha, beta);
+
+      //console.log('lda', 3)
+      var theta = lda.getTheta();
+      
+      //console.log('lda', 4)
+      var phi = lda.getPhi();
+      //console.log('theta', theta)
+      //console.log('phi', phi)
+      //console.log('lda', 5)
+
+      var text = '';
+
+      //topics
+      var topTerms = this.configTop;
+      var topicText = new Array();
+      for (var k = 0; k < phi.length; k++) {
+        //text += '<canvas id="topic' + k + '" class="topicbox color' + k + '"><ul>';
+        var tuples = new Array();
+        for (var w = 0; w < phi[k].length; w++) {
+          tuples.push("" + phi[k][w].toPrecision(2) + "_" + vocab[w]);
+        }
+        tuples.sort().reverse();
+        if (topTerms > vocab.length) {
+          topTerms = vocab.length
+        }
+        topicText[k] = [];
+        for (var t = 0; t < topTerms; t++) {
+          var topicTerm = tuples[t].split("_")[1];
+          var prob = parseInt(tuples[t].split("_")[0] * 10000);
+          if (prob < 0.0001) {
+            continue;
+          }
+          //text += ('<li><a href="javascript:void(0);" data-weight="' + (prob) + '" title="' + prob + '%">' + topicTerm + '</a></li>');
+          //console.log("topic " + k + ": " + topicTerm + " = " + prob + "%");
+          
+          //topicText[k] += (topicTerm + " ");
+          topicText[k].push({
+            term: topicTerm,
+            prob: prob
+          })
+        }
+        //text += '</ul></canvas>';
+      }
+      //$('#topiccloud').html(text);
+      
+      this.topicTerms = topicText
+      
+      //console.log(topicText)
+
+      //text = '<div class="spacer"> </div>';
+      text = ''
+      //highlight sentences	
+      for (var m = 0; m < theta.length; m++) {
+        text += '<div class="lines">';
+        text += '<div class="prob">';
+        for (var k = 0; k < theta[m].length; k++) {
+          text += ('<div class="box bgcolor' + k + '" style="width:' + parseInt("" + (theta[m][k] * 100)) + 'px" title="' + topicText[k] + '"></div>');
+        }
+        text += '</div>' + sentences[m] + '</div>';
+      }
+      $("#output").html(text);
+
+      /*
+      for (var k = 0; k < phi.length; k++) {
+        if (!$('#topic' + k).tagcanvas({
+          textColour: $('#topic' + k).css('color'),
+          maxSpeed: 0.05,
+          initial: [(Math.random() > 0.5 ? 1 : -1) * Math.random() / 2, (Math.random() > 0.5 ? 1 : -1) * Math.random() / 2], //[0.1,-0.1],
+          decel: 0.98,
+          reverse: true,
+          weightSize: 10,
+          weightMode: 'size',
+          weightFrom: 'data-weight',
+          weight: true
+        }))
+        {
+          $('#topic' + k).hide();
+        } else {
+          //TagCanvas.Start('topic'+k);
+        }
+      }
+      */
+      
+      this.processOutputWait = false
+      this.configChanged = false
     },
   }
 })

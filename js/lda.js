@@ -60,7 +60,19 @@ var lda = new function() {
         }
     }
 	
-	this.gibbs = function (K,alpha,beta) {
+  this.sleep = function (ms) {
+    if (typeof(ms) !== 'number') {
+        ms = 1
+      }
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true)
+        }, ms)
+      })
+  }
+  
+	this.gibbs = async function (K,alpha,beta) {
 		var i;
         this.K = K;
         this.alpha = alpha;
@@ -75,8 +87,18 @@ var lda = new function() {
          //   + " iterations with burn-in of " + this.BURN_IN + " (B/S="
          //   + this.THIN_INTERVAL + ").<br/>");
         for (i = 0; i < this.ITERATIONS; i++) {
+          if (i > 0 && i % 100 === 0) {
+            await this.sleep()
+          }
 			for (var m = 0; m < this.z.length; m++) {
+          if (m > 0 && m % 100 === 0) {
+            await this.sleep()
+          }
                 for (var n = 0; n < this.z[m].length; n++) {
+                  
+                  if (n > 0 && n % 100 === 0) {
+                    await this.sleep()
+                  }
 			        var topic = this.sampleFullConditional(m, n);
 					this.z[m][n] = topic;
                 }

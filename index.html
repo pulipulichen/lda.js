@@ -22,7 +22,7 @@
 <script src="vendors/js-xlsx/full/jszip.js"></script>
 <script src="vendors/js-xlsx/full/cpexcel.js"></script>
 <script src="vendors/js-xlsx/full/xlsx.js"></script>
-
+<script src="vendors/Porter-Stemmer/PorterStemmer1980.min.js"></script>
 <script src="vendors/form-persist.js"></script>
 <link rel="stylesheet/less" type="text/css" href="css/lda.less" />
 <script>less = {env: 'production'};</script>
@@ -37,7 +37,7 @@
   
     <div class="ui grid container"
          v-show="displayPanel === 'topic'">
-      
+
       <div class="row">
         <div class="sixteen wide column">
           <div class="field">
@@ -46,7 +46,11 @@
               id="text"
               v-model="inputText"></textarea>
           </div>
-          
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="five wide column">
           <div class="inline fields" id="menu">
             <div class="field">
               <label for="topics">Topics:</label>
@@ -55,7 +59,7 @@
               <select 
                 name="topics" id="topics" 
                 class="data-auto-save"
-                v-model="topicNumber">
+                v-model="configTopicNumber">
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
@@ -68,26 +72,115 @@
               </select>
             </div>
             <div class="field">
-              <input type="range" min="2" max="10" class="slider" v-model="topicNumber">
+              <input type="range" min="2" max="10" class="slider" 
+                     v-model="configTopicNumber">
             </div>
           </div>
-          
+        </div>
+        <div class="center aligned seven wide column">
+          <div class="inline fields">
+            <div class="field">
+              <label>Alpha:</label>
+            </div>
+            <div class="field">
+              <input 
+                type="number" 
+                name="alpha"
+                class="data-auto-save"
+                v-model="configAlpha"
+                step="0.1" />
+            </div>
+
+            <div class="field">
+              <label>Beta:</label>
+            </div>
+            <div class="field">
+              <input 
+                type="number" 
+                name="beta"
+                class="data-auto-save"
+                v-model="configBeta"
+                step="0.01" />
+            </div>
+          </div>
+        </div>
+        <div class="right aligned four wide column">
+          <div class="inline fields">
+            <div class="field">
+              <label>Top terms:</label>
+            </div>
+            <div class="field">
+              <input 
+                type="number" 
+                name="top"
+                class="data-auto-save"
+                v-model="configTop" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="sixteen wide column">   
           <div class="field">
             <button 
               id="btnTopicise" 
               type="button" 
-              onclick="btnTopiciseClicked();"
-              class="ui fluid button">
+              v-on:click="processOutput"
+              class="ui fluid button"
+              v-bind:class="{'green': configChanged}">
               Analyse
             </button>
           </div>
         </div>
       </div>
-          
-      
-      
-      
-      <div id="topiccloud"></div>
+
+      <div class="row table-row">
+        <div class="four wide column table-column"
+             v-for="(topic, i) in topicTerms">
+          <table class="ui compact table">
+            <caption class="center aligned">
+              <div class="inline fields">
+                <div class="field">
+                  <div class="ui header">
+                    <span v-bind:class="'color' + i">
+                      Topic {{ (i+1) }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <button type="button"
+                          class="ui icon button"
+                          v-on:click="drawWordCloud(topic)">
+                    <i class="cloud icon"></i>
+                  </button>
+                  <!--
+                  <button type="button"
+                          class="ui icon button"
+                          v-on:click="copyTopic(topic)">
+                    <i class="copy icon"></i>
+                  </button>
+                  -->
+                </div>
+              </div>
+
+
+            </caption>
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Prob.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in topic">
+                <td>{{ item.term }}</td>
+                <td>{{ (item.prob / 100) }}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- ============================================================= -->
@@ -109,6 +202,8 @@
 </div>
 
 <!-- ============================================================= -->
+<div class="menu-padding"></div>
+
 <div class="ui inverted three item bottom fixed menu">
   <a class="item"
      v-bind:class="{'active': (displayPanel === 'topic')}"

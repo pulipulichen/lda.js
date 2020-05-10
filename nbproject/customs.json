@@ -7,6 +7,12 @@
     "v-if": {
       "context": "div"
     },
+    "v-on:click": {
+      "context": "button"
+    },
+    "v-for": {
+      "context": "table"
+    },
     "v-show": {
       "context": "div"
     },
