@@ -32,9 +32,10 @@ var app = {
     },
     sortedTopicDocuments () {
       setTimeout(() => {
-        $(this.$refs.DocumentTable).tablesort({
+        let table = $(this.$refs.DocumentTable)
+        table.find('.sentence').popup()
+        table.tablesort({
           sortInitialOrder: 'desc',
-          sortList: [[0, 1]]
         })
       }, 0)
       if (this.sortDocuments === -1) {
@@ -484,6 +485,9 @@ var app = {
     },
     computedMaxProbTopic: function (arr) {
       return arr.indexOf(Math.max(...arr));
+    },
+    downloadTopicDocument: function () {
+      console.error('@TODO')
     }
   }
 }

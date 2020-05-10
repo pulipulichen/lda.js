@@ -45,6 +45,7 @@
         if (!sortInitialOrder) {
           sortInitialOrder = self.settings.sortInitialOrder
         }
+        console.log(sortInitialOrder)
 				this.direction = sortInitialOrder;
 				this.index = th.index();
 			}

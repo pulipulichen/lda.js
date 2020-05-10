@@ -54,6 +54,8 @@ body {
 	font-size:10pt;
 	//width:80%;
 	//margin-left:10%;
+  min-height: 0 !important;
+  height: 8rem;
 }
 
 /*
@@ -81,12 +83,12 @@ body {
 }
 
 .display-panel {
-  max-height: calc(100vh - 5rem);
+  max-height: calc(100vh - 2rem);
   overflow-x: hidden;
   overflow-y: auto;
   
   & > .ui.segment {
-    max-height: calc(100vh - 5rem);
+    max-height: calc(100vh - 8rem);
     overflow-y: auto;
   }
 }
@@ -167,4 +169,14 @@ th.sorted.descending:after {
 
 th.sortable {
   cursor: pointer !important;
+}
+
+.sentence {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  
+  cursor: pointer;
 }

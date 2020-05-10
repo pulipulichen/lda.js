@@ -37,8 +37,32 @@
         onsubmit="return false">
   
     <div class="ui grid container"
-         v-show="displayPanel === 'topic'">
+         v-if="displayPanel === 'topic'">
 
+      <div class="row">
+        <div class="twelve wide column">
+          <h1 class="ui header">
+            Topic Modeling
+          </h1>
+        </div>
+        <div class="right aligned four wide column">
+          <!--
+          <button 
+            class="ui mini icon basic button" 
+            v-on:click="$refs.InputConfigFileTrigger.click();">
+            <i class="folder open outline icon"></i>
+          </button>
+          <input 
+            type="file" 
+            class="input-field" 
+            ref="InputConfigFileTrigger"
+            id="input_config_file"
+            accept=".ods"
+            v-on:change="loadConfigFile" />
+          -->
+        </div>
+      </div>
+      
       <div class="row">
         <div class="sixteen wide column">
           <div class="field">
@@ -188,6 +212,21 @@
     
     <div class="ui grid container display-panel"
          v-show="displayPanel === 'detail'">
+      
+      <div class="row">
+        <div class="twelve wide column">
+          <h1 class="ui header">
+            Documents
+          </h1>
+        </div>
+        <div class="right aligned four wide column">
+          <button class="ui mini icon basic button"
+                    v-on:click="downloadTopicDocument">
+            <i class="save outline icon"></i>
+          </button>
+        </div>
+      </div>
+      
       <div id="output" class="ui segment">
         <table class="ui unstackable table"
                id="documentTable"
@@ -195,10 +234,11 @@
           <thead>
             <tr>
               <th v-for="i in topicNumberArray"
-                  class="sortable">
+                  class="sortable right aligned">
                 T{{ (i+1) }}
               </th>
-              <th class="sortable" data-sort-default="asc">Prob.</th>
+              <th class="sortable center aligned" 
+                  data-sort-default="asc">Prob.</th>
               <th class="sortable" data-sort-default="asc">Document</th>
             </tr>
           </thead>
@@ -217,7 +257,10 @@
                      v-bind:style="'width:' + parseInt( (t * 100)) + 'px'" 
                      v-bind:title="'Topic ' + (i+1) + ' theta: ' + t"></div>
               </td>
-              <td v-bind:data-sort-value="documentID">
+              <td v-bind:data-sort-value="documentID"
+                  class="sentence"
+                  data-variation="inverted"
+                  v-bind:data-content="document.sentence">
                 {{ document.sentence }}
               </td>
             </tr>
@@ -248,10 +291,10 @@
     Topic
   </a>
   <a class="item"
-     v-bind:class="{'active': (displayPanel === 'detail')}"
+     v-bind:class="{'active': (displayPanel === 'detail'), 'disabled': (sortedTopicDocuments.length === 0)}"
      v-on:click="displayPanel = 'detail'">
     <i class="cogs icon"></i>
-    Detail
+    Document
   </a>
   <a class="item"
      v-bind:class="{'active': (displayPanel === 'about')}"
