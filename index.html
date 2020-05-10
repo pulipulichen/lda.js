@@ -75,10 +75,10 @@
       </div>
 
       <div class="row">
-        <div class="five wide column">
+        <div class="sixteen centered wide column">
           <div class="inline fields" id="menu">
             <div class="field">
-              <label for="topics">Topics:</label>
+              <label for="topics">Topics</label>
             </div>
             <div class="field">
               <select 
@@ -99,47 +99,6 @@
             <div class="field">
               <input type="range" min="2" max="10" class="slider" 
                      v-model="configTopicNumber">
-            </div>
-          </div>
-        </div>
-        <div class="center aligned seven wide column">
-          <div class="inline fields">
-            <div class="field">
-              <label>Alpha:</label>
-            </div>
-            <div class="field">
-              <input 
-                type="number" 
-                name="alpha"
-                class="data-auto-save"
-                v-model="configAlpha"
-                step="0.1" />
-            </div>
-
-            <div class="field">
-              <label>Beta:</label>
-            </div>
-            <div class="field">
-              <input 
-                type="number" 
-                name="beta"
-                class="data-auto-save"
-                v-model="configBeta"
-                step="0.01" />
-            </div>
-          </div>
-        </div>
-        <div class="right aligned four wide column">
-          <div class="inline fields">
-            <div class="field">
-              <label>Top terms:</label>
-            </div>
-            <div class="field">
-              <input 
-                type="number" 
-                name="top"
-                class="data-auto-save"
-                v-model="configTop" />
             </div>
           </div>
         </div>
@@ -269,6 +228,133 @@
       </div>
     </div>
 
+    
+    <!-- ============================================================= -->
+
+    <div class="ui grid container configuration-panel"
+         v-if="displayPanel === 'configuration'">
+      
+      <div class="row">
+        <div class="twelve wide column">
+          <h1 class="ui header">
+            Configuration
+          </h1>
+        </div>
+        <div class="right aligned four wide column">
+          
+          <button class="ui mini icon basic button"
+                    v-on:click="downloadConfiguration">
+            <i class="save outline icon"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="sixteen wide column">
+          <div class="two fields">
+            <div class="field">
+              <label for="topics">Topics</label>
+              <select 
+                name="topics" id="topics" 
+                class="data-auto-save"
+                v-model="configTopicNumber">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+              <input type="range" min="2" max="10" class="slider" 
+                     v-model="configTopicNumber">
+            </div>
+            <div class="field">
+              <label>Top N</label>
+              <input 
+                type="number" 
+                name="top"
+                class="data-auto-save"
+                v-model="configTopN" />
+            </div>
+          </div>
+          
+          <div class="three fields">
+            <div class="field">
+              <label>
+                Alpha
+              </label>
+              <input 
+                  type="number" 
+                  name="alpha"
+                  class="data-auto-save"
+                  v-model="configAlpha"
+                  step="0.1" />
+            </div>
+            <div class="field">
+              <label>
+                Beta
+              </label>
+              <input 
+                type="number" 
+                name="beta"
+                class="data-auto-save"
+                v-model="configBeta"
+                step="0.01" />
+            </div>
+            <div class="field">
+              <label>
+                Interations
+              </label>
+              <input 
+                type="number" 
+                name="configIterations"
+                class="data-auto-save"
+                v-model="configIterations"
+                step="500" />
+            </div>
+          </div>
+          <div class="three fields">
+            <div class="field">
+              <label>
+                Burn In
+              </label>
+              <input 
+                type="number" 
+                name="configBurnIn"
+                class="data-auto-save"
+                v-model="configBurnIn"
+                step="500" />
+            </div>
+            <div class="field">
+              <label>
+                Thin Interval
+              </label>
+              <input 
+                type="number" 
+                name="configThinInterval"
+                class="data-auto-save"
+                v-model="configThinInterval"
+                step="10" />
+            </div>
+            <div class="field">
+              <label>
+                Sample Lag
+              </label>
+              <input 
+                type="number" 
+                name="configSampleLag"
+                class="data-auto-save"
+                v-model="configSampleLag" />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    
     <!-- ============================================================= -->
 
 <div class="ui grid container display-panel"
@@ -283,7 +369,7 @@
 <!-- ============================================================= -->
 <div class="menu-padding"></div>
 
-<div class="ui inverted three item bottom fixed menu">
+<div class="ui inverted four item bottom fixed menu">
   <a class="item"
      v-bind:class="{'active': (displayPanel === 'topic')}"
      v-on:click="displayPanel = 'topic'">
@@ -293,8 +379,14 @@
   <a class="item"
      v-bind:class="{'active': (displayPanel === 'detail'), 'disabled': (sortedTopicDocuments.length === 0)}"
      v-on:click="displayPanel = 'detail'">
-    <i class="cogs icon"></i>
+    <i class="file alternate icon"></i>
     Document
+  </a>
+  <a class="item"
+     v-bind:class="{'active': (displayPanel === 'configuration')}"
+     v-on:click="displayPanel = 'configuration'">
+    <i class="cogs icon"></i>
+    Configuration
   </a>
   <a class="item"
      v-bind:class="{'active': (displayPanel === 'about')}"

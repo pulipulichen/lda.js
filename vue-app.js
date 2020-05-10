@@ -7,11 +7,17 @@ let postMessageAPI = PuliPostMessageAPI({
 var app = {
   el: '#app',
   data: {
+    //inputTextFile: 'data/email-segment.txt',
+    inputTextFile: 'data/abstract.txt',
     inputText: ``,
     configTopicNumber: 4,
     configAlpha: 0.1,
     configBeta: 0.01,
-    configTop: 100,
+    configTopN: 100,
+    configIterations: 500,  // 10000
+    configBurnIn: 2000,
+    configThinInterval: 100,
+    configSampleLag: 10,
     processOutputWait: false,
     displayPanel: 'topic',
     //displayPanel: 'configuration',
@@ -66,7 +72,7 @@ var app = {
     //console.log(this.searchParams.api)
     if (!this.searchParams.api) {
       setTimeout(() => {
-        $.get('email-segment.txt', (text) => {
+        $.get(this.inputTextFile, (text) => {
           this.inputText = text
           this.processOutput()
         })
@@ -75,18 +81,14 @@ var app = {
     }
   },
   watch: {
-    configTopicNumber () {
-      this.persist()
-    },
-    configAlpha () {
-      this.persist()
-    },
-    configBeta () {
-      this.persist()
-    },
-    configTop () {
-      this.persist()
-    },
+    configTopicNumber () { this.persist() },
+    configAlpha () { this.persist() },
+    configBeta () { this.persist() },
+    configTopN () { this.persist() },
+    configIterations () { this.persist() },
+    configBurnIn () { this.persist() },
+    configThinInterval () { this.persist() },
+    configSampleLag () { this.persist() },
   },
   methods: {
     setupAPI () {
@@ -112,7 +114,11 @@ var app = {
         configTopicNumber: this.configTopicNumber,
         configAlpha: this.configAlpha,
         configBeta: this.configBeta,
-        configTop: this.configTop,
+        configTopN: this.configTopN,
+        configIterations: this.configIterations,
+        configBurnIn: this.configBurnIn,
+        configThinInterval: this.configThinInterval,
+        configSampleLag: this.configSampleLag,
       }
       localStorage.setItem(key, JSON.stringify(data))
     },
@@ -133,7 +139,7 @@ var app = {
       var reader = new FileReader();
       let filename = evt.target.files[0].name
       let type = evt.target.files[0].type
-      console.log(type)
+      //console.log(type)
       if (filename.indexOf('.') > -1) {
         filename = filename.slice(0, filename.lastIndexOf('.'))
       }
@@ -297,8 +303,8 @@ var app = {
       console.error('@TODO', array)
     },
     drawWordCloud (array) {
-      //let url = 'https://pulipulichen.github.io/d3-cloud/index.html'
-      let url = 'http://localhost:8383/d3-cloud/index.html'
+      let url = 'https://pulipulichen.github.io/d3-cloud/index.html'
+      //let url = 'http://localhost:8383/d3-cloud/index.html'
       //let url = 'http://pc.pulipuli.info:8383/d3-cloud/index.html'
       
       let text = []
@@ -370,19 +376,39 @@ var app = {
       //var beta = 0.01
       
       //console.log('lda', 1)
-      let ITERATIONS = 10000
-      let burnIn = 2000
-      let thinInterval = 100
-      let sampleLag = 10
+//      let ITERATIONS = 10000
+//      let burnIn = 2000
+//      let thinInterval = 100
+//      let sampleLag = 10
+      
+      let ITERATIONS = Number(this.configIterations)
+      let burnIn = Number(this.configBurnIn)
+      let thinInterval = Number(this.configThinInterval)
+      let sampleLag = Number(this.configSampleLag)
+      //console.log(ITERATIONS, burnIn, thinInterval, sampleLag)
       lda.configure(documents, V, ITERATIONS, burnIn, thinInterval, sampleLag);
       //console.log('lda', 2)
       await lda.gibbs(K, alpha, beta);
 
+      //console.log('lda', 4)
+      var phi = lda.getPhi();
+      while (isNaN(phi[0][0])) {
+        if (this.configIterations > 1000000) {
+          alert('LDA analyze failed.')
+          return false
+        }
+        this.configIterations = this.configIterations * 10
+        console.log('Analyze failed. Increase interations: ' + this.configIterations)
+        ITERATIONS = Number(this.configIterations)
+        lda.configure(documents, V, ITERATIONS, burnIn, thinInterval, sampleLag)
+        await lda.gibbs(K, alpha, beta);
+        phi = lda.getPhi();
+      }
+      
       //console.log('lda', 3)
       var theta = lda.getTheta();
       
-      //console.log('lda', 4)
-      var phi = lda.getPhi();
+      //console.log(phi)
       //console.log('theta', theta)
       //console.log('phi', phi)
       //console.log('lda', 5)
@@ -390,7 +416,7 @@ var app = {
       //var text = '';
 
       //topics
-      var topTerms = this.configTop;
+      var topTerms = this.configTopN;
       var topicText = new Array();
       for (var k = 0; k < phi.length; k++) {
         //text += '<canvas id="topic' + k + '" class="topicbox color' + k + '"><ul>';
@@ -487,6 +513,9 @@ var app = {
       return arr.indexOf(Math.max(...arr));
     },
     downloadTopicDocument: function () {
+      console.error('@TODO')
+    },
+    downloadConfiguration: function () {
       console.error('@TODO')
     }
   }

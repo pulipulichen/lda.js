@@ -72,57 +72,69 @@ var lda = new function() {
       })
   }
   
-	this.gibbs = async function (K,alpha,beta) {
-		var i;
-        this.K = K;
-        this.alpha = alpha;
-        this.beta = beta;
-        if (this.SAMPLE_LAG > 0) {
-            this.thetasum = make2DArray(this.documents.length,this.K);
-            this.phisum = make2DArray(this.K,this.V);
-            this.numstats = 0;
-        }
-        this.initialState(K);
-        //document.write("Sampling " + this.ITERATIONS
-         //   + " iterations with burn-in of " + this.BURN_IN + " (B/S="
-         //   + this.THIN_INTERVAL + ").<br/>");
-        for (i = 0; i < this.ITERATIONS; i++) {
-          if (i > 0 && i % 100 === 0) {
-            await this.sleep()
-          }
-			for (var m = 0; m < this.z.length; m++) {
-          if (m > 0 && m % 100 === 0) {
-            await this.sleep()
-          }
-                for (var n = 0; n < this.z[m].length; n++) {
-                  
-                  if (n > 0 && n % 100 === 0) {
-                    await this.sleep()
-                  }
-			        var topic = this.sampleFullConditional(m, n);
-					this.z[m][n] = topic;
-                }
-            }
-            if ((i < this.BURN_IN) && (i % this.THIN_INTERVAL == 0)) {
-				//document.write("B");
-                this.dispcol++;
-            }
-            if ((i > this.BURN_IN) && (i % this.THIN_INTERVAL == 0)) {
-                //document.write("S");
-                this.dispcol++;
-            }
-            if ((i > this.BURN_IN) && (this.SAMPLE_LAG > 0) && (i % this.SAMPLE_LAG == 0)) {
-                this.updateParams();
-				//document.write("|");                
-                if (i % this.THIN_INTERVAL != 0)
-                    this.dispcol++;
-            }
-            if (this.dispcol >= 100) {
-				//document.write("*<br/>");                
-                this.dispcol = 0;
-            }
-        }
+	this.gibbs = async function (K, alpha, beta) {
+    var i;
+    this.K = K;
+    this.alpha = alpha;
+    this.beta = beta;
+    
+    let sleepInterval = 500
+    
+    if (this.SAMPLE_LAG > 0) {
+      this.thetasum = make2DArray(this.documents.length, this.K);
+      this.phisum = make2DArray(this.K, this.V);
+      this.numstats = 0;
     }
+    this.initialState(K);
+    //document.write("Sampling " + this.ITERATIONS
+    //   + " iterations with burn-in of " + this.BURN_IN + " (B/S="
+    //   + this.THIN_INTERVAL + ").<br/>");
+    for (i = 0; i < this.ITERATIONS; i++) {
+      
+      if (i > 0 && i % sleepInterval === 0) {
+        console.log(i, Math.round((i / this.ITERATIONS) * 100) + '%')
+        await this.sleep()
+      }
+      
+      for (var m = 0; m < this.z.length; m++) {
+        if (m > 0 && m % sleepInterval === 0) {
+          //console.log(i, Math.round((i / this.ITERATIONS) * 100) + '%'
+          //  , m, Math.round((m / this.z.length) * 100) + '%')
+          await this.sleep()
+        }
+        for (var n = 0; n < this.z[m].length; n++) {
+
+          if (n > 0 && n % sleepInterval === 0) {
+            //console.log(i, Math.round((i / this.ITERATIONS) * 100) + '%'
+            //  , m, Math.round((m / this.z.length) * 100) + '%'
+            //  , n, Math.round((n / this.z[m].length) * 100) + '%')
+            await this.sleep()
+          }
+          var topic = this.sampleFullConditional(m, n);
+          this.z[m][n] = topic;
+        }
+      }
+      
+      if ((i < this.BURN_IN) && (i % this.THIN_INTERVAL === 0)) {
+        //document.write("B");
+        this.dispcol++;
+      }
+      if ((i > this.BURN_IN) && (i % this.THIN_INTERVAL === 0)) {
+        //document.write("S");
+        this.dispcol++;
+      }
+      if ((i > this.BURN_IN) && (this.SAMPLE_LAG > 0) && (i % this.SAMPLE_LAG === 0)) {
+        this.updateParams();
+        //document.write("|");                
+        if (i % this.THIN_INTERVAL !== 0)
+          this.dispcol++;
+      }
+      if (this.dispcol >= 100) {
+        //document.write("*<br/>");                
+        this.dispcol = 0;
+      }
+    }
+  }
 	
 	
 	this.sampleFullConditional = function(m,n) {
