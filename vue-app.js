@@ -63,7 +63,7 @@ var app = new Vue({
   methods: {
     setupAPI () {
       postMessageAPI.addReceiveListener(async (data) => {
-        //console.log('收到資料了', data)
+        console.log('收到資料了', data)
         if (typeof(data) === 'string') {
           this.inputText = data
         }
@@ -75,7 +75,7 @@ var app = new Vue({
         
         return await this.processOutput()
       })
-      //console.log('設定好了')
+      console.log('設定好了')
     },
     persist () {
       this.configChanged = true
@@ -282,7 +282,8 @@ var app = new Vue({
       
       postMessageAPI.send(url, text.join(' '), {
         mode: 'popup',
-        newWindow: true
+        newWindow: true,
+        features: 0.8
       })
     },
     isEnglishNumberWord (word) {
@@ -341,7 +342,11 @@ var app = new Vue({
       //var beta = 0.01
       
       //console.log('lda', 1)
-      lda.configure(documents, V, 10000, 2000, 100, 10);
+      let ITERATIONS = 10000
+      let burnIn = 2000
+      let thinInterval = 100
+      let sampleLag = 10
+      lda.configure(documents, V, ITERATIONS, burnIn, thinInterval, sampleLag);
       //console.log('lda', 2)
       await lda.gibbs(K, alpha, beta);
 
