@@ -93,7 +93,7 @@ var app = {
   methods: {
     setupAPI () {
       postMessageAPI.addReceiveListener(async (data) => {
-        console.log('收到資料了', data)
+        //console.log('收到資料了', data)
         if (typeof(data) === 'string') {
           this.inputText = data
         }
@@ -101,6 +101,11 @@ var app = {
           for (let key in data) {
             this[key] = data[key]
           }
+        }
+        
+        let lines = this.inputText.trim().split('\n').map(line => line.trim()).filter(line => line !== '').length
+        if (lines > 1 && this.configTopicNumber > lines) {
+          this.configTopicNumber = lines
         }
         
         return await this.processOutput()
