@@ -31,6 +31,12 @@ var app = {
       return output
     },
     sortedTopicDocuments () {
+      setTimeout(() => {
+        $(this.$refs.DocumentTable).tablesort({
+          sortInitialOrder: 'desc',
+          sortList: [[0, 1]]
+        })
+      }, 0)
       if (this.sortDocuments === -1) {
         //console.log(this.topicDocuments[0])
         return this.topicDocuments
@@ -475,6 +481,9 @@ var app = {
       if (t === Math.max.apply(this, theta)) {
         return 'color' + k
       }
+    },
+    computedMaxProbTopic: function (arr) {
+      return arr.indexOf(Math.max(...arr));
     }
   }
 }

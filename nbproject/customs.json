@@ -7,6 +7,12 @@
     "v-if": {
       "context": "div"
     },
+    "ref": {
+      "context": "table"
+    },
+    "v-bind:data-sort-value": {
+      "context": "td"
+    },
     "v-on:click": {
       "context": "button"
     },
