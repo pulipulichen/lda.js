@@ -7,8 +7,8 @@ let postMessageAPI = PuliPostMessageAPI({
 var app = {
   el: '#app',
   data: {
-    //inputTextFile: 'data/email-segment.txt',
-    inputTextFile: 'data/abstract.txt',
+    inputTextFile: 'data/email-segment.txt',
+    //inputTextFile: 'data/abstract.txt',
     inputText: ``,
     configTopicNumber: 4,
     configAlpha: 0.1,
