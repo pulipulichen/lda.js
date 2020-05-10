@@ -4,7 +4,7 @@ let postMessageAPI = PuliPostMessageAPI({
   manuallyReady: true
 })
 
-var app = new Vue({
+var app = {
   el: '#app',
   data: {
     inputText: ``,
@@ -17,7 +17,9 @@ var app = new Vue({
     //displayPanel: 'configuration',
     persistKey: 'lda-js.' + location.href,
     configChanged: false,
-    topicTerms: []
+    topicTerms: [],
+    topicDocuments: [],
+    sortDocuments: -1
   },
   computed: {
     searchParams () {
@@ -25,6 +27,25 @@ var app = new Vue({
       const currentURL = new URL(location.href)
       for(let [key, value] of currentURL.searchParams.entries()) {
         output[key] = value
+      }
+      return output
+    },
+    sortedTopicDocuments () {
+      if (this.sortDocuments === -1) {
+        //console.log(this.topicDocuments[0])
+        return this.topicDocuments
+      }
+      else {
+        let output = JSON.parse(JSON.stringify(this.topicDocuments))
+        output.sort(function (a, b) {
+          return (b.theta[this.sortDocuments] - a.theta[this.sortDocuments])
+        })
+      }
+    },
+    topicNumberArray () {
+      let output = []
+      for (let i = 0; i < this.configTopicNumber; i++) {
+        output.push(i)
       }
       return output
     }
@@ -75,7 +96,7 @@ var app = new Vue({
         
         return await this.processOutput()
       })
-      console.log('設定好了')
+      //console.log('設定好了')
     },
     persist () {
       this.configChanged = true
@@ -359,7 +380,7 @@ var app = new Vue({
       //console.log('phi', phi)
       //console.log('lda', 5)
 
-      var text = '';
+      //var text = '';
 
       //topics
       var topTerms = this.configTop;
@@ -399,6 +420,7 @@ var app = new Vue({
       //console.log(topicText)
 
       //text = '<div class="spacer"> </div>';
+      /*
       text = ''
       //highlight sentences	
       for (var m = 0; m < theta.length; m++) {
@@ -410,6 +432,15 @@ var app = new Vue({
         text += '</div>' + sentences[m] + '</div>';
       }
       $("#output").html(text);
+      */
+      this.topicDocuments = theta.map((t, m) => {
+        return {
+          sentence: sentences[m],
+          theta: t
+        }
+      })
+      
+      //console.log(this.topicDocuments)
 
       /*
       for (var k = 0; k < phi.length; k++) {
@@ -435,5 +466,17 @@ var app = new Vue({
       this.processOutputWait = false
       this.configChanged = false
     },
+    displayPercent: function (t) {
+      t = Math.round(t * 10000) / 100
+      return t + '%'
+    },
+    computedDocumentClass: function (k, theta, t) {
+      //console.log(k, Math.max.apply(this, theta), t)
+      if (t === Math.max.apply(this, theta)) {
+        return 'color' + k
+      }
+    }
   }
-})
+}
+
+app = new Vue(app)

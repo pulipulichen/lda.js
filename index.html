@@ -187,7 +187,38 @@
     
     <div class="ui grid container display-panel"
          v-show="displayPanel === 'detail'">
-      <div id="output" class="ui segment"></div>
+      <div id="output" class="ui segment">
+        <table class="ui unstackable table">
+          <thead>
+            <tr>
+              <th v-for="i in topicNumberArray">
+                Topic {{ (i+1) }}
+              </th>
+              <th>Prob.</th>
+              <th>Document</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="document in sortedTopicDocuments">
+              <td v-for="(t, i) in document.theta"
+                  v-bind:title="'Topic ' + (i+1) + ' theta: ' + displayPercent(t)"
+                  v-bind:class="computedDocumentClass(i, document.theta, t)"
+                  class="right aligned">
+                {{ displayPercent(t) }}
+              </td>
+              <td>
+                <div v-for="(t, i) in document.theta"
+                     v-bind:class="'box bgcolor' + i" 
+                     v-bind:style="'width:' + parseInt( (t * 100)) + 'px'" 
+                     v-bind:title="'Topic ' + (i+1) + ' theta: ' + t"></div>
+              </td>
+              <td>
+                {{ document.sentence }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- ============================================================= -->
