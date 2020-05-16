@@ -198,7 +198,10 @@
               </th>
               <th class="sortable center aligned" 
                   data-sort-default="asc">Prob.</th>
-              <th class="sortable" data-sort-default="asc">Document</th>
+              <th class="sortable right aligned" 
+                  data-sort-default="asc">#</th>
+              <th class="sortable" 
+                  data-sort-default="asc">Document</th>
             </tr>
           </thead>
           <tbody>
@@ -217,10 +220,18 @@
                      v-bind:title="'Topic ' + (i+1) + ' theta: ' + t"></div>
               </td>
               <td v-bind:data-sort-value="documentID"
+                  class="document-id right aligned"
+                  data-variation="inverted"
+                  v-bind:data-content="document.sentence">
+                {{ (documentID + 1) }}
+              </td>
+              <td v-bind:data-sort-value="documentID"
                   class="sentence"
                   data-variation="inverted"
                   v-bind:data-content="document.sentence">
-                {{ document.sentence }}
+                <div class="sentence">
+                  {{ document.sentence }}
+                </div>
               </td>
             </tr>
           </tbody>
