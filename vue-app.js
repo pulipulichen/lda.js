@@ -95,7 +95,7 @@ var app = {
       postMessageAPI.addReceiveListener(async (data) => {
         //console.log('收到資料了', data)
         if (typeof(data) === 'string') {
-          this.inputText = data
+          this.inputText = data.trim()
         }
         else {
           for (let key in data) {
@@ -336,7 +336,7 @@ var app = {
       var f = {};
       var vocab = new Array();
       var docCount = 0;
-      let sentences = this.inputText.split('\n')
+      let sentences = this.inputText.trim().split('\n')
       
       for (var i = 0; i < sentences.length; i++) {
         if (sentences[i] === "") {
