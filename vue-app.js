@@ -42,6 +42,9 @@ var app = {
         table.find('.sentence').popup()
         table.tablesort({
           sortInitialOrder: 'desc',
+          afterSort: () => {
+            table.find('.sentence').popup()
+          }
         })
       }, 0)
       if (this.sortDocuments === -1) {
@@ -57,7 +60,7 @@ var app = {
     },
     topicNumberArray () {
       let output = []
-      for (let i = 0; i < this.configTopicNumber; i++) {
+      for (let i = 0; i < this.topicTerms.length; i++) {
         output.push(i)
       }
       return output

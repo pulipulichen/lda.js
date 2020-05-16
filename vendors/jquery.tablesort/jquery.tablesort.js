@@ -45,7 +45,7 @@
         if (!sortInitialOrder) {
           sortInitialOrder = self.settings.sortInitialOrder
         }
-        console.log(sortInitialOrder)
+        //console.log(sortInitialOrder)
 				this.direction = sortInitialOrder;
 				this.index = th.index();
 			}
@@ -90,6 +90,10 @@
 				self.$table.trigger('tablesort:complete', [self]);
 				//Try to force a browser redraw
 				self.$table.css("display");
+        
+        if (typeof(self.settings.afterSort) === 'function') {
+          self.settings.afterSort()
+        }
 			}, unsortedValues.length > 2000 ? 200 : 10);
 		},
 

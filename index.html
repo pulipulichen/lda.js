@@ -193,14 +193,14 @@
           <thead>
             <tr>
               <th v-for="i in topicNumberArray"
-                  class="sortable right aligned">
+                  class="sortable right aligned cell-topic">
                 T{{ (i+1) }}
               </th>
-              <th class="sortable center aligned" 
+              <th class="sortable center aligned cell-prob" 
                   data-sort-default="asc">Prob.</th>
-              <th class="sortable right aligned" 
+              <th class="sortable right aligned cell-id" 
                   data-sort-default="asc">#</th>
-              <th class="sortable" 
+              <th class="sortable cell-document" 
                   data-sort-default="asc">Document</th>
             </tr>
           </thead>
@@ -209,29 +209,28 @@
               <td v-for="(t, i) in document.theta"
                   v-bind:title="'Topic ' + (i+1) + ' theta: ' + displayPercent(t)"
                   v-bind:class="computedDocumentClass(i, document.theta, t)"
-                  class="right aligned"
+                  class="right aligned cell-topic"
                   v-bind:data-sort-value="t">
                 {{ displayPercent(t) }}
               </td>
-              <td v-bind:data-sort-value="computedMaxProbTopic(document.theta)">
+              <td v-bind:data-sort-value="computedMaxProbTopic(document.theta)"
+                  class="center aligned cell-prob">
                 <div v-for="(t, i) in document.theta"
                      v-bind:class="'box bgcolor' + i" 
                      v-bind:style="'width:' + parseInt( (t * 100)) + 'px'" 
                      v-bind:title="'Topic ' + (i+1) + ' theta: ' + t"></div>
               </td>
               <td v-bind:data-sort-value="documentID"
-                  class="document-id right aligned"
+                  class="document-id right aligned cell-id"
                   data-variation="inverted"
                   v-bind:data-content="document.sentence">
                 {{ (documentID + 1) }}
               </td>
               <td v-bind:data-sort-value="documentID"
-                  class="sentence"
+                  class="sentence cell-document"
                   data-variation="inverted"
-                  v-bind:data-content="document.sentence">
-                <div class="sentence">
-                  {{ document.sentence }}
-                </div>
+                  v-bind:data-content="'#' + (documentID+1) + ' ' + document.sentence">
+                {{ document.sentence }}
               </td>
             </tr>
           </tbody>
