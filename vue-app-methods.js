@@ -384,6 +384,7 @@ var appMethods = {
         topic: this.computedMaxProbTopic(t)
       }
     })
+    
 
     //console.log(this.topicDocuments)
 
@@ -424,11 +425,17 @@ var appMethods = {
   computedMaxProbTopic: function (arr) {
     return arr.indexOf(Math.max(...arr));
   },
+  downloadTopicTerms: function () {
+    console.error('@TODO')
+    window.alert('@TODO')
+  },
   downloadTopicDocument: function () {
     console.error('@TODO')
+    window.alert('@TODO')
   },
   downloadConfiguration: function () {
     console.error('@TODO')
+    window.alert('@TODO')
   },
   setDocumentSortTopic (topic) {
     if (this.documentSortField !== topic) {
@@ -473,5 +480,45 @@ var appMethods = {
       this.documentSortOrder = null
     }
     this._toggleDocumentSortOrder()
+  },
+  _toggleTermSortOrder () {
+    if (this.termSortOrder === 'asc') {
+      this.termSortOrder = 'desc'
+    }
+    else {
+      this.termSortOrder = 'asc'
+    }
+  },
+  setTermSortAlphabetical () {
+    if (this.termSortField !== 'alphabetical') {
+      this.termSortField = 'alphabetical'
+      this.termSortOrder = null
+    }
+    this._toggleTermSortOrder()
+    console.log(this.termSortField, this.termSortOrder)
+  },
+  setTermSortAllTopics () {
+    if (this.termSortField !== 'topic') {
+      this.termSortField = 'topic'
+      this.termSortOrder = null
+    }
+    this._toggleTermSortOrder()
+  },
+  setTermSortTopic (topic) {
+    if (this.termSortField !== topic) {
+      this.termSortField = topic
+      this.termSortOrder = null
+    }
+    
+    if (this.termSortOrder === 'desc') {
+      this.termSortOrder = 'asc'
+    }
+    else {
+      this.termSortOrder = 'desc'
+    }
+  },
+  normalizeProb (probs) {
+    let base = probs.reduce((p, total) => p + total)
+    return probs.map(p => p / base)
   }
 }

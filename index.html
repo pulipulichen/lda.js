@@ -173,6 +173,102 @@
     <!-- ============================================================= -->
     
     <div class="ui grid container display-panel"
+         v-show="displayPanel === 'term'">
+      
+      <div class="row">
+        <div class="twelve wide column">
+          <h1 class="ui header">
+            Terms
+          </h1>
+        </div>
+        <div class="right aligned four wide column">
+          <button class="ui mini icon basic button"
+                    v-on:click="downloadTopicTerms">
+            <i class="save outline icon"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div id="output" class="ui segment">
+        <table class="ui unstackable table"
+               id="termTable"
+               ref="TermTable">
+          <thead>
+            <tr>
+              <th v-for="i in topicNumberArray"
+                  class="sortable right aligned cell-topic"
+                  v-on:click="setTermSortTopic(i)">
+                T{{ (i+1) }}
+                <template v-if="termSortField === i">
+                  <i class="caret down icon" 
+                     v-if="termSortOrder === 'desc'"></i>
+                  <i class="caret up icon" 
+                     v-if="termSortOrder === 'asc'"></i>
+                </template>
+              </th>
+              <th class="sortable center aligned cell-prob" 
+                  data-sort-default="asc"
+                  v-on:click="setTermSortAllTopics('topic')">
+                Prob.
+                <template v-if="termSortField === 'topic'">
+                  <i class="caret down icon" 
+                     v-if="termSortOrder === 'desc'"></i>
+                  <i class="caret up icon" 
+                     v-if="termSortOrder === 'asc'"></i>
+                </template>
+              </th>
+              <th class="sortable cell-document" 
+                  data-sort-default="asc"
+                  v-on:click="setTermSortAlphabetical()">
+                Term
+                <template v-if="termSortField === 'alphabetical'">
+                  <i class="caret down icon" 
+                     v-if="termSortOrder === 'desc'"></i>
+                  <i class="caret up icon" 
+                     v-if="termSortOrder === 'asc'"></i>
+                </template>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(term) in sortedTopicTerms">
+              <td v-for="(t, i) in term.prob"
+                  v-bind:title="'Topic ' + (i+1) + ' theta: ' + displayPercent(t)"
+                  v-bind:class="computedDocumentClass(i, term.prob, t)"
+                  class="right aligned cell-topic"
+                  v-bind:data-sort-value="t">
+                <template v-if="t > 0">
+                  {{ displayPercent(t) }}
+                </template>
+                <template v-else>
+                  -
+                </template>
+              </td>
+              <td v-bind:data-sort-value="term.topic"
+                  class="center aligned cell-prob">
+                <div class="bar-wrapper">
+                  <div v-for="(t, i) in normalizeProb(term.prob)"
+                       v-bind:class="'box bgcolor' + i" 
+                       v-bind:style="'width:' + parseInt( (t * 100)) + 'px'" 
+                       v-bind:title="'Topic ' + (i+1) + ' theta: ' + t"></div>
+                </div>
+                {{ (term.topic + 1) }}
+              </td>
+              <td class="sentence cell-document"
+                  data-variation="inverted"
+                  v-bind:data-content="'# ' + term.term">
+                {{ term.term }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    
+    <!-- ============================================================= -->
+    
+    <div class="ui grid container display-panel"
          v-show="displayPanel === 'detail'">
       
       <div class="row">

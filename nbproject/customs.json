@@ -19,6 +19,9 @@
     "v-for": {
       "context": "table"
     },
+    "v-bind:data-content": {
+      "context": "td"
+    },
     "v-show": {
       "context": "div"
     },
