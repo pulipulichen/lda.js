@@ -196,19 +196,53 @@
           <thead>
             <tr>
               <th v-for="i in topicNumberArray"
-                  class="sortable right aligned cell-topic">
+                  class="sortable right aligned cell-topic"
+                  v-on:click="setDocumentSortTopic(i)">
                 T{{ (i+1) }}
+                <template v-if="documentSortField === i">
+                  <i class="caret down icon" 
+                     v-if="documentSortOrder === 'desc'"></i>
+                  <i class="caret up icon" 
+                     v-if="documentSortOrder === 'asc'"></i>
+                </template>
               </th>
               <th class="sortable center aligned cell-prob" 
-                  data-sort-default="asc">Prob.</th>
+                  data-sort-default="asc"
+                  v-on:click="setDocumentSortAllTopics('topic')">
+                Prob.
+                <template v-if="documentSortField === 'topics'">
+                  <i class="caret down icon" 
+                     v-if="documentSortOrder === 'desc'"></i>
+                  <i class="caret up icon" 
+                     v-if="documentSortOrder === 'asc'"></i>
+                </template>
+              </th>
               <th class="sortable right aligned cell-id" 
-                  data-sort-default="asc">#</th>
+                  data-sort-default="asc"
+                  v-on:click="setDocumentSortID()">
+                #
+                <template v-if="documentSortField === 'id'">
+                  <i class="caret down icon" 
+                     v-if="documentSortOrder === 'desc'"></i>
+                  <i class="caret up icon" 
+                     v-if="documentSortOrder === 'asc'"></i>
+                </template>
+              </th>
               <th class="sortable cell-document" 
-                  data-sort-default="asc">Document</th>
+                  data-sort-default="asc"
+                  v-on:click="setDocumentSortAlphabetical()">
+                Document
+                <template v-if="documentSortField === 'alphabetical'">
+                  <i class="caret down icon" 
+                     v-if="documentSortOrder === 'desc'"></i>
+                  <i class="caret up icon" 
+                     v-if="documentSortOrder === 'asc'"></i>
+                </template>
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(document, documentID) in sortedTopicDocuments">
+            <tr v-for="(document) in sortedTopicDocuments">
               <td v-for="(t, i) in document.theta"
                   v-bind:title="'Topic ' + (i+1) + ' theta: ' + displayPercent(t)"
                   v-bind:class="computedDocumentClass(i, document.theta, t)"
@@ -216,23 +250,26 @@
                   v-bind:data-sort-value="t">
                 {{ displayPercent(t) }}
               </td>
-              <td v-bind:data-sort-value="computedMaxProbTopic(document.theta)"
+              <td v-bind:data-sort-value="document.topic"
                   class="center aligned cell-prob">
-                <div v-for="(t, i) in document.theta"
-                     v-bind:class="'box bgcolor' + i" 
-                     v-bind:style="'width:' + parseInt( (t * 100)) + 'px'" 
-                     v-bind:title="'Topic ' + (i+1) + ' theta: ' + t"></div>
+                <div class="bar-wrapper">
+                  <div v-for="(t, i) in document.theta"
+                       v-bind:class="'box bgcolor' + i" 
+                       v-bind:style="'width:' + parseInt( (t * 100)) + 'px'" 
+                       v-bind:title="'Topic ' + (i+1) + ' theta: ' + t"></div>
+                </div>
+                {{ (document.topic + 1) }}
               </td>
-              <td v-bind:data-sort-value="documentID"
+              <td v-bind:data-sort-value="document.id"
                   class="document-id right aligned cell-id"
                   data-variation="inverted"
                   v-bind:data-content="document.sentence">
-                {{ (documentID + 1) }}
+                {{ (document.id + 1) }}
               </td>
-              <td v-bind:data-sort-value="documentID"
+              <td v-bind:data-sort-value="document.id"
                   class="sentence cell-document"
                   data-variation="inverted"
-                  v-bind:data-content="'#' + (documentID+1) + ' ' + document.sentence">
+                  v-bind:data-content="'#' + (document.id+1) + ' ' + document.sentence">
                 {{ document.sentence }}
               </td>
             </tr>
@@ -382,7 +419,7 @@
 <!-- ============================================================= -->
 <div class="menu-padding"></div>
 
-<div class="ui inverted four item bottom fixed menu">
+<div class="ui inverted five item bottom fixed menu">
   <a class="item"
      v-bind:class="{'active': (displayPanel === 'topic')}"
      v-on:click="displayPanel = 'topic'">
