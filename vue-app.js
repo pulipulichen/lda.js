@@ -25,7 +25,11 @@ var app = {
     configChanged: false,
     topicTerms: [],
     topicDocuments: [],
-    sortDocuments: -1
+    sortDocuments: -1,
+    documentSortField: null,
+    documentSortOrder: null,
+    termSortField: null,
+    termSortOrder: null
   },
   computed: {
     searchParams () {
@@ -37,6 +41,7 @@ var app = {
       return output
     },
     sortedTopicDocuments () {
+      /*
       setTimeout(() => {
         let table = $(this.$refs.DocumentTable)
         table.find('.sentence').popup()
@@ -47,6 +52,7 @@ var app = {
           }
         })
       }, 0)
+      */
       if (this.sortDocuments === -1) {
         //console.log(this.topicDocuments[0])
         return this.topicDocuments
