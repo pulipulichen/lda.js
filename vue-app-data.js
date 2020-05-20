@@ -1,0 +1,25 @@
+var appData = {
+    inputTextFile: 'data/email-segment.txt',
+    //inputTextFile: 'data/abstract.txt',
+    inputText: ``,
+    configTopicNumber: 4,
+    configAlpha: 0.1,
+    configBeta: 0.01,
+    configTopN: 100,
+    configIterations: 500,  // 10000
+    configBurnIn: 2000,
+    configThinInterval: 100,
+    configSampleLag: 10,
+    processOutputWait: false,
+    displayPanel: 'topic',
+    //displayPanel: 'configuration',
+    persistKey: 'lda-js.' + location.href,
+    configChanged: false,
+    topicTerms: [],
+    topicDocuments: [],
+    sortDocuments: -1,
+    documentSortField: null,
+    documentSortOrder: null,
+    termSortField: null,
+    termSortOrder: null
+  }

@@ -390,6 +390,12 @@
     Topic
   </a>
   <a class="item"
+     v-bind:class="{'active': (displayPanel === 'term'), 'disabled': (sortedTopicTerms.length === 0)}"
+     v-on:click="displayPanel = 'term'">
+    <i class="sort alphabet down icon"></i>
+    Term
+  </a>
+  <a class="item"
      v-bind:class="{'active': (displayPanel === 'detail'), 'disabled': (sortedTopicDocuments.length === 0)}"
      v-on:click="displayPanel = 'detail'">
     <i class="file alternate icon"></i>
@@ -416,6 +422,11 @@
 
 </form>
   
+  <script src="vue-app-data.js"></script>
+  <script src="vue-app-computed.js"></script>
+  <script src="vue-app-watch.js"></script>
+  <script src="vue-app-mounted.js"></script>
+  <script src="vue-app-methods.js"></script>
   <script src="vue-app.js"></script>
 
 </body>
