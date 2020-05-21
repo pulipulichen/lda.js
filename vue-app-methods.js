@@ -426,12 +426,71 @@ var appMethods = {
     return arr.indexOf(Math.max(...arr));
   },
   downloadTopicTerms: function () {
-    console.error('@TODO')
-    window.alert('@TODO')
+    let header = ['term', 'match']
+
+    this.topicTerms.forEach((t, i) => {
+      header.push('T' + (i + 1))
+    })
+
+    let data = [header]
+
+    this.sortedTopicTerms.forEach(({term, topic, prob}) => {
+      let row = [
+        term,
+        (topic+1)
+      ]
+
+      prob.forEach(t => {
+        row.push(t)
+      })
+
+      data.push(row)
+    })
+
+    var wb = XLSX.utils.book_new();
+
+
+    wb.SheetNames.push("Topic2Term")
+    wb.Sheets["Topic2Term"] = XLSX.utils.aoa_to_sheet(data)
+
+
+    var wbout = XLSX.write(wb, {bookType: 'ods', type: 'binary'});
+    let filename = 'LDA-Topic2Term_' + (new Date()).mmddhhmm() + '.ods'
+    saveAs(new Blob([this.s2ab(wbout)],{type:"application/octet-stream"}), filename)
   },
   downloadTopicDocument: function () {
-    console.error('@TODO')
-    window.alert('@TODO')
+    let header = ['id', 'document', 'match']
+
+    this.topicTerms.forEach((t, i) => {
+      header.push('T' + (i + 1))
+    })
+
+    let data = [header]
+
+    this.sortedTopicDocuments.forEach(({id, sentence, topic, theta}) => {
+      let row = [
+        (id+1),
+        sentence,
+        (topic+1)
+      ]
+
+      theta.forEach(t => {
+        row.push(t)
+      })
+
+      data.push(row)
+    })
+
+    var wb = XLSX.utils.book_new();
+
+
+    wb.SheetNames.push("Topic2Doc")
+    wb.Sheets["Topic2Doc"] = XLSX.utils.aoa_to_sheet(data)
+
+
+    var wbout = XLSX.write(wb, {bookType: 'ods', type: 'binary'});
+    let filename = 'LDA-Topic2Doc_' + (new Date()).mmddhhmm() + '.ods'
+    saveAs(new Blob([this.s2ab(wbout)],{type:"application/octet-stream"}), filename)
   },
   downloadConfiguration: function () {
     console.error('@TODO')
