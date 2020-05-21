@@ -1,4 +1,4 @@
-/* global XLSX, lda */
+/* global XLSX, lda, appData, appComputed, appWatch, appMethods, appMounted */
 
 let postMessageAPI = PuliPostMessageAPI({
   manuallyReady: true

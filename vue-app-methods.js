@@ -234,9 +234,16 @@ var appMethods = {
     var english = /^[A-Za-z0-9]*$/;
     return english.test(word)
   },
+  resetOutput: function () {
+    this.topicDocuments = []
+    this.topicTerms = []
+  },
   processOutput: async function () {
     //console.log("analysing "+sentences.length+" sentences...");
     this.processOutputWait = true
+    
+    this.resetOutput()
+    
     var documents = new Array();
     var f = {};
     var vocab = new Array();
