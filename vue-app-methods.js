@@ -213,15 +213,33 @@ var appMethods = {
     console.error('@TODO', array)
   },
   drawWordCloud(array) {
-    let url = 'https://pulipulichen.github.io/d3-cloud/index.html'
-    //let url = 'http://localhost:8383/d3-cloud/index.html'
+    //let url = 'https://pulipulichen.github.io/d3-cloud/index.html'
+    let url = 'http://localhost:8383/d3-cloud/index.html'
     //let url = 'http://pc.pulipuli.info:8383/d3-cloud/index.html'
 
     let text = []
+    
+    // 先把array做最基礎化的調整
+    let minProb = array[(array.length - 1)].prob
+    /*
     array.forEach(({term, prob}) => {
-      for (let i = 0; i < Math.ceil(prob / 100); i++) {
+      if (minProb === null
+              || prob < minProb) {
+        minProb = prob
+      }
+    })
+    */
+    
+    array.forEach(({term, prob}, i) => {
+      array[i].prob = array[i].prob / minProb
+    })
+    
+    //console.log(array)
+    
+    array.forEach(({term, prob}) => {
+      for (let i = 0; i < Math.ceil(prob); i++) {
         text.push(term)
-    }
+      }
     })
 
     postMessageAPI.send(url, text.join(' '), {
