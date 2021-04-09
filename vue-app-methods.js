@@ -47,8 +47,9 @@ var appMethods = {
   },
   loadInputFile(evt) {
     //console.log(1);
-    if (!window.FileReader)
+    if (!window.FileReader) {
       return; // Browser is not compatible
+    }
 
     this.processOutputWait = true
     var reader = new FileReader();
@@ -269,10 +270,12 @@ var appMethods = {
     let sentences = this.inputText.trim().split('\n')
 
     for (var i = 0; i < sentences.length; i++) {
-      if (sentences[i] === "") {
+      let sentence = sentences[i].trim()
+      
+      if (sentence === "") {
         continue;
       }
-      var words = sentences[i].split(/[\s,\"]+/);
+      var words = sentence.split(/[\s,\"]+/);
       if (!words)
         continue;
       var wordIndices = new Array();
