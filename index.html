@@ -127,7 +127,7 @@
       <div class="row table-row">
         <div class="four wide column table-column"
              v-for="(topic, i) in topicTerms">
-          <table class="ui compact table">
+          <table class="ui unstackable compact table">
             <caption class="center aligned">
               <div class="inline fields">
                 <div class="field">
@@ -554,6 +554,9 @@
 <div class="loading-modal" 
      v-if="processOutputWait">
   <img src="css/loading.svg" />
+  <div v-if="progressPercentage > 0" class="progress">
+    {{ progressPercentage }}%
+  </div>
 </div>
 
 </form>

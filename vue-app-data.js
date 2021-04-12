@@ -1,11 +1,14 @@
 var appData = {
     //inputTextFile: 'data/email-segment.txt',
-    inputTextFile: 'data/abstract.txt',
+    //inputTextFile: 'data/abstract.txt',
+    inputTextFile: 'data/fake_news.txt',
+    loadInputTextFile: true,
+    //inputTextFile: ``,
     inputText: ``,
     configTopicNumber: 4,
     configAlpha: 0.1,
     configBeta: 0.01,
-    configTopN: 100,
+    configTopN: 10,
     configIterations: 500,  // 10000
     configBurnIn: 2000,
     configThinInterval: 100,
@@ -21,5 +24,6 @@ var appData = {
     documentSortField: null,
     documentSortOrder: null,
     termSortField: null,
-    termSortOrder: null
+    termSortOrder: null,
+    progressPercentage: 0
   }

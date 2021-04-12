@@ -1,4 +1,6 @@
 
+/* global lda */
+
 function topicise() {
 	//console.log("analysing "+sentences.length+" sentences...");
 	var documents = new Array();
@@ -6,14 +8,14 @@ function topicise() {
 	var vocab=new Array();
 	var docCount=0;
 	for(var i=0;i<sentences.length;i++) {
-		if (sentences[i]=="") continue;
+		if (sentences[i]==="") continue;
 		var words = sentences[i].split(/[\s,\"]+/);
 		if(!words) continue;
 		var wordIndices = new Array();
 		for(var wc=0;wc<words.length;wc++) {
 			var w=words[wc].toLowerCase().replace(/[^a-z\'A-Z0-9 ]+/g, '');
 			//TODO: Add stemming
-			if (w=="" || w.length==1 || stopwords[w] || w.indexOf("http")==0) continue;
+			if (w=="" || w.length===1 || stopwords[w] || w.indexOf("http")===0) continue;
 			if (f[w]) { 
 				f[w]=f[w]+1;			
 			} 

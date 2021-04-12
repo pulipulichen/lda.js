@@ -8,6 +8,10 @@ var appMounted = function () {
     
     //console.log(this.searchParams.api)
     if (!this.searchParams.api) {
+      if (this.loadInputTextFile === false) {
+        return false
+      }
+      
       setTimeout(() => {
         $.get(this.inputTextFile, (text) => {
           this.inputText = text

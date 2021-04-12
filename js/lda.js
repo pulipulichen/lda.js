@@ -78,7 +78,7 @@ var lda = new function() {
     this.alpha = alpha;
     this.beta = beta;
     
-    let sleepInterval = 500
+    let sleepInterval = 300
     
     if (this.SAMPLE_LAG > 0) {
       this.thetasum = make2DArray(this.documents.length, this.K);
@@ -93,6 +93,7 @@ var lda = new function() {
       
       if (i > 0 && i % sleepInterval === 0) {
         console.log(i, Math.round((i / this.ITERATIONS) * 100) + '%')
+        window.$app.progressPercentage = Math.round((i / this.ITERATIONS) * 100)
         await this.sleep()
       }
       
@@ -196,21 +197,47 @@ var lda = new function() {
     }
 	
 	this.getPhi = function () {
-        var phi = new Array(); for(var i=0;i<this.K;i++) phi[i] = new Array();
-        if (this.SAMPLE_LAG > 0) {
-            for (var k = 0; k < this.K; k++) {
-                for (var w = 0; w < this.V; w++) {
-                    phi[k][w] = this.phisum[k][w] / this.numstats;
+    var phi = new Array(); 
+    for(var i=0;i<this.K;i++) {
+      phi[i] = new Array();
+      if (this.SAMPLE_LAG > 0) {
+          for (var k = 0; k < this.K; k++) {
+              for (var w = 0; w < this.V; w++) {
+                if (typeof(phi[k]) !== 'object') {
+                  phi[k] = {}
                 }
-            }
-        } else {
-            for (var k = 0; k < this.K; k++) {
-                for (var w = 0; w < this.V; w++) {
-                    phi[k][w] = (this.nw[w][k] + this.beta) / (this.nwsum[k] + this.V * this.beta);
+                if (this.numstats === 0) {
+                  phi[k][w] = 0
                 }
-            }
-        }
-        return phi;
+                else {
+                  phi[k][w] = this.phisum[k][w] / this.numstats;
+                }
+              }
+          }
+      } else {
+          for (var k = 0; k < this.K; k++) {
+              for (var w = 0; w < this.V; w++) {
+                if (typeof(phi[k]) !== 'object') {
+                  phi[k] = {}
+                }
+                phi[k][w] = (this.nw[w][k] + this.beta) / (this.nwsum[k] + this.V * this.beta);
+              }
+          }
+      }
+      
+      
+      console.log({
+        K: this.K,
+        SAMPLE_LAG: this.SAMPLE_LAG, 
+        V: this.V, 
+        phisum: this.phisum, 
+        numstats: this.numstats, 
+        nw: this.nw,
+        phi
+      })
+      return phi;
     }
+      
+  }
 
 }

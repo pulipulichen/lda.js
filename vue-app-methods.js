@@ -16,12 +16,19 @@ var appMethods = {
       if (lines > 1 && this.configTopicNumber > lines) {
         this.configTopicNumber = lines
       }
+      
+      if (this.configTopicNumber < 2) {
+        this.configTopicNumber = 2
+      }
 
-      return await this.processOutput()
+      //return await this.processOutput()
+      return true
     })
     //console.log('設定好了')
   },
   persist() {
+    return false
+    
     this.configChanged = true
     let key = this.persistKey
     let data = {
@@ -37,6 +44,7 @@ var appMethods = {
     localStorage.setItem(key, JSON.stringify(data))
   },
   loadPersistedData() {
+    return false
     let dataString = localStorage.getItem(this.persistKey)
     if (dataString) {
       let data = JSON.parse(dataString)
@@ -260,6 +268,7 @@ var appMethods = {
   processOutput: async function () {
     //console.log("analysing "+sentences.length+" sentences...");
     this.processOutputWait = true
+    this.progressPercentage = 1
     
     this.resetOutput()
     
@@ -300,7 +309,7 @@ var appMethods = {
         documents[docCount++] = wordIndices;
       }
 
-      if (i > 0 && i % 100 === 0) {
+      if (i > 0 && i % 10000 === 500) {
         await this.sleep()
       }
     }
@@ -326,7 +335,8 @@ var appMethods = {
     //console.log(ITERATIONS, burnIn, thinInterval, sampleLag)
     lda.configure(documents, V, ITERATIONS, burnIn, thinInterval, sampleLag);
     //console.log('lda', 2)
-    await lda.gibbs(K, alpha, beta);
+    await lda.gibbs(K, alpha, beta)
+    this.progressPercentage = 0
 
     //console.log('lda', 4)
     var phi = lda.getPhi();
@@ -335,13 +345,14 @@ var appMethods = {
         alert('LDA analyze failed.')
         return false
       }
-      this.configIterations = this.configIterations * 10
+      this.configIterations = this.configIterations + 1000
       console.log('Analyze failed. Increase interations: ' + this.configIterations)
       ITERATIONS = Number(this.configIterations)
       lda.configure(documents, V, ITERATIONS, burnIn, thinInterval, sampleLag)
       await lda.gibbs(K, alpha, beta);
       phi = lda.getPhi();
     }
+    this.progressPercentage = 0
 
     //console.log('lda', 3)
     var theta = lda.getTheta();
@@ -368,10 +379,14 @@ var appMethods = {
       }
       topicText[k] = [];
       for (var t = 0; t < topTerms; t++) {
+        if (!tuples[t]) {
+          continue
+        }
         var topicTerm = tuples[t].split("_")[1];
         var prob = parseInt(tuples[t].split("_")[0] * 10000);
         if (prob < 0.0001) {
-          continue;
+          prob = 0
+          //continue;
         }
         //text += ('<li><a href="javascript:void(0);" data-weight="' + (prob) + '" title="' + prob + '%">' + topicTerm + '</a></li>');
         //console.log("topic " + k + ": " + topicTerm + " = " + prob + "%");
