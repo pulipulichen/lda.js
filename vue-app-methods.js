@@ -340,6 +340,11 @@ var appMethods = {
 
     //console.log('lda', 4)
     var phi = lda.getPhi();
+    //console.log(phi)
+    //console.log(vocab)
+    this.ldaNW = lda.nw
+    this.ldaVoc = vocab
+    
     while (isNaN(phi[0][0])) {
       if (this.configIterations > 1000000) {
         alert('LDA analyze failed.')
@@ -371,9 +376,23 @@ var appMethods = {
       //text += '<canvas id="topic' + k + '" class="topicbox color' + k + '"><ul>';
       var tuples = new Array();
       for (var w = 0; w < phi[k].length; w++) {
-        tuples.push("" + phi[k][w].toPrecision(2) + "_" + vocab[w]);
+        //tuples.push("" + phi[k][w].toPrecision(2) + "_" + vocab[w]);
+        //tuples.push("" + phi[k][w] + "_" + vocab[w]);
+        tuples.push({
+          prop: phi[k][w] * 10000,
+          term: vocab[w]
+        });
       }
-      tuples.sort().reverse();
+      tuples.sort((a, b) => {
+        if (b.prop > a.prop) {
+          return 1
+        }
+        else {
+          return -1
+        }
+        return 0
+      })
+      //console.log(tuples)
       if (topTerms > vocab.length) {
         topTerms = vocab.length
       }
@@ -382,12 +401,12 @@ var appMethods = {
         if (!tuples[t]) {
           continue
         }
-        var topicTerm = tuples[t].split("_")[1];
-        var prob = parseInt(tuples[t].split("_")[0] * 10000);
-        if (prob < 0.0001) {
-          prob = 0
+        var topicTerm = tuples[t].term;
+        var prob = tuples[t].prop
+        //if (prob < 0.0001) {
+          //prob = 0
           //continue;
-        }
+        //}
         //text += ('<li><a href="javascript:void(0);" data-weight="' + (prob) + '" title="' + prob + '%">' + topicTerm + '</a></li>');
         //console.log("topic " + k + ": " + topicTerm + " = " + prob + "%");
 
@@ -400,6 +419,29 @@ var appMethods = {
       //text += '</ul></canvas>';
     }
     //$('#topiccloud').html(text);
+
+    topicText.sort((a, b) => {
+      for (let len = a.length, i = len; i > 0; i--) {
+        let aItem = a[(len - i)]
+        let bItem = b[(len - i)]
+        
+        if (aItem.term > bItem.term) {
+            return 1;
+        }
+        if (bItem.term > aItem.term) {
+            return -1;
+        }
+        
+        if (aItem.term !== bItem.term) {
+          if (aItem.prob > bItem.prob) {
+              return -1;
+          }
+          if (bItem.prob > aItem.prob) {
+              return 1;
+          }
+        }
+      }
+    })
 
     this.topicTerms = topicText
 
@@ -456,9 +498,15 @@ var appMethods = {
     this.configChanged = false
   },
   displayPercent: function (t) {
-    t = Math.round(t * 10000) / 100
-    return t + '%'
+    t = Math.round(t * 1000000) / 10000
+    if (t === 0) {
+      return '< 0.01%'
+    }
+    else {
+      return t + '%'
+    }
   },
+  
   computedDocumentClass: function (k, theta, t) {
     //console.log(k, Math.max.apply(this, theta), t)
     if (t === Math.max.apply(this, theta)) {

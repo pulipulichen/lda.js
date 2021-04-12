@@ -22,22 +22,22 @@ function make2DArray(x,y) {
 
 var lda = new function() {
 	var documents,z,nw,nd,nwsum,ndsum,thetasum,phisum,V,K,alpha,beta; 
-    var THIN_INTERVAL = 20;
-    var BURN_IN = 100;
-    var ITERATIONS = 1000;
-    var SAMPLE_LAG;
-    var dispcol = 0;
-	var numstats=0;
-	this.configure = function (docs,v,iterations,burnIn,thinInterval,sampleLag) {
-        this.ITERATIONS = iterations;
-        this.BURN_IN = burnIn;
-        this.THIN_INTERVAL = thinInterval;
-        this.SAMPLE_LAG = sampleLag;
-		this.documents = docs;
-		this.V = v;
-		this.dispcol=0;
-		this.numstats=0; 
-    }
+  var THIN_INTERVAL = 20;
+  var BURN_IN = 100;
+  var ITERATIONS = 1000;
+  var SAMPLE_LAG;
+  var dispcol = 0;
+  var numstats = 0;
+	this.configure = function (docs, v, iterations, burnIn, thinInterval, sampleLag) {
+    this.ITERATIONS = iterations;
+    this.BURN_IN = burnIn;
+    this.THIN_INTERVAL = thinInterval;
+    this.SAMPLE_LAG = sampleLag;
+    this.documents = docs;
+    this.V = v;
+    this.dispcol = 0;
+    this.numstats = 0;
+  }
 	this.initialState = function (K) {
         var i;
         var M = this.documents.length;
@@ -92,7 +92,7 @@ var lda = new function() {
     for (i = 0; i < this.ITERATIONS; i++) {
       
       if (i > 0 && i % sleepInterval === 0) {
-        console.log(i, Math.round((i / this.ITERATIONS) * 100) + '%')
+        console.log(i, this.ITERATIONS, Math.round((i / this.ITERATIONS) * 100) + '%')
         window.$app.progressPercentage = Math.round((i / this.ITERATIONS) * 100)
         await this.sleep()
       }
@@ -134,9 +134,9 @@ var lda = new function() {
         //document.write("*<br/>");                
         this.dispcol = 0;
       }
-    }
+    } // for (i = 0; i < this.ITERATIONS; i++) {
+    this.updateParams();
   }
-	
 	
 	this.sampleFullConditional = function(m,n) {
         var topic = this.z[m][n];
@@ -198,13 +198,16 @@ var lda = new function() {
 	
 	this.getPhi = function () {
     var phi = new Array(); 
+    
     for(var i=0;i<this.K;i++) {
       phi[i] = new Array();
-      if (this.SAMPLE_LAG > 0) {
+    }
+    
+    if (this.SAMPLE_LAG > 0) {
           for (var k = 0; k < this.K; k++) {
               for (var w = 0; w < this.V; w++) {
                 if (typeof(phi[k]) !== 'object') {
-                  phi[k] = {}
+                  phi[k] = []
                 }
                 if (this.numstats === 0) {
                   phi[k][w] = 0
@@ -218,7 +221,7 @@ var lda = new function() {
           for (var k = 0; k < this.K; k++) {
               for (var w = 0; w < this.V; w++) {
                 if (typeof(phi[k]) !== 'object') {
-                  phi[k] = {}
+                  phi[k] = []
                 }
                 phi[k][w] = (this.nw[w][k] + this.beta) / (this.nwsum[k] + this.V * this.beta);
               }
@@ -235,9 +238,7 @@ var lda = new function() {
         nw: this.nw,
         phi
       })
-      return phi;
-    }
-      
+      return phi;   
   }
 
 }

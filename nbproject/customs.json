@@ -16,6 +16,9 @@
     "v-on:click": {
       "context": "button"
     },
+    "v-else": {
+      "context": "template"
+    },
     "v-for": {
       "context": "table"
     },

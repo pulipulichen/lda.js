@@ -1,15 +1,16 @@
 var appData = {
     //inputTextFile: 'data/email-segment.txt',
     //inputTextFile: 'data/abstract.txt',
-    inputTextFile: 'data/fake_news.txt',
-    loadInputTextFile: true,
+    //inputTextFile: 'data/fake_news.txt',
+    inputTextFile: 'data/wine_1.txt',
+    loadInputTextFile: false,
     //inputTextFile: ``,
     inputText: ``,
     configTopicNumber: 4,
     configAlpha: 0.1,
     configBeta: 0.01,
-    configTopN: 10,
-    configIterations: 500,  // 10000
+    configTopN: 100,
+    configIterations: 5000,  // 10000
     configBurnIn: 2000,
     configThinInterval: 100,
     configSampleLag: 10,
@@ -25,5 +26,7 @@ var appData = {
     documentSortOrder: null,
     termSortField: null,
     termSortOrder: null,
-    progressPercentage: 0
+    progressPercentage: 0,
+    ldaNW: [],
+    ldaVoc: []
   }
