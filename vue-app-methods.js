@@ -425,6 +425,13 @@ var appMethods = {
         let aItem = a[(len - i)]
         let bItem = b[(len - i)]
         
+        if (aItem.prob > bItem.prob) {
+            return -1;
+        }
+        if (bItem.prob > aItem.prob) {
+            return 1;
+        }
+        
         if (aItem.term > bItem.term) {
             return 1;
         }
@@ -432,14 +439,7 @@ var appMethods = {
             return -1;
         }
         
-        if (aItem.term !== bItem.term) {
-          if (aItem.prob > bItem.prob) {
-              return -1;
-          }
-          if (bItem.prob > aItem.prob) {
-              return 1;
-          }
-        }
+        return 0
       }
     })
 
@@ -506,7 +506,23 @@ var appMethods = {
       return t + '%'
     }
   },
-  
+  copyTable (topic) {
+    let output = []
+    for (let i = 0; i < this.configTopN; i++) {
+      let {term, prob} = topic[i]
+      prob = prob / 10000
+      output.push(`${term}\t${prob}`)
+    }
+    this.copyToClipboard(output.join('\n'))
+  },
+  copyToClipboard: function (str) {
+    const el = document.createElement('textarea');
+    el.value = str;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  },
   computedDocumentClass: function (k, theta, t) {
     //console.log(k, Math.max.apply(this, theta), t)
     if (t === Math.max.apply(this, theta)) {
