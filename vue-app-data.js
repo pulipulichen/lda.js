@@ -3,7 +3,7 @@ var appData = {
     //inputTextFile: 'data/abstract.txt',
     //inputTextFile: 'data/fake_news.txt',
     inputTextFile: 'data/wine_1.txt',
-    loadInputTextFile: false,
+    loadInputTextFile: true,
     //inputTextFile: ``,
     inputText: ``,
     configTopicNumber: 4,

@@ -110,58 +110,61 @@ var appComputed = {
       return sortDocuments
     },
     baseTopicTerms () {
-//      let terms = {}
-//      let termsProbs = []
-//      
-//      let zeroProb = []
-//      this.topicTerms.forEach(() => {
-//        zeroProb.push(0)
-//      })
-//      
-//      for (let i = 0; i < this.topicTerms.length; i++) {
-//        for (let t = 0; t < this.topicTerms[i].length; t++) {
-//          let {term, prob} = this.topicTerms[i][t]
-//          term = term.trim()
-//          
-//          if (!terms[term]) {
-//            terms[term] = termsProbs.length
-//            
-//            termsProbs.push({
-//              term: term,
-//              prob: Array.from(Object.create(zeroProb))
-//            })
-//          }
-//          
-//          let termIndex = terms[term]
-//          termsProbs[termIndex].prob[i] = prob / 10000
-//        }
-//      }
-//      
-//      termsProbs.forEach(termJSON => {
-//        termJSON.topic = this.computedMaxProbTopic(termJSON.prob)
-//      })
-//      console.log(termsProbs)
-//      return termsProbs
-     
-      let termsProbs = Array.from(Object.create(this.ldaNW))
+      let terms = {}
+      let termsProbs = []
       
-      let output = []
-      termsProbs.forEach((item, i) => {
-        if (!this.topTerms[this.ldaVoc[i]]) {
-          return false
-        }
-        
-        let sum = item.reduce((a,b) => a + b, 0)
-
-        output.push({
-          prob: item.map(p => p / sum),
-          topic: this.computedMaxProbTopic(item),
-          term: this.ldaVoc[i]
-        })
+      let zeroProb = []
+      this.topicTerms.forEach(() => {
+        zeroProb.push(0)
       })
-      //console.log(output)
-      return output
+      
+      for (let i = 0; i < this.topicTerms.length; i++) {
+        for (let t = 0; t < this.topicTerms[i].length; t++) {
+          let {term, prob} = this.topicTerms[i][t]
+          term = term.trim()
+          
+          if (!terms[term]) {
+            terms[term] = termsProbs.length
+            
+            termsProbs.push({
+              term: term,
+              prob: Array.from(Object.create(zeroProb))
+            })
+          }
+          
+          let termIndex = terms[term]
+          termsProbs[termIndex].prob[i] = prob / 10000
+        }
+      }
+      
+      termsProbs.forEach(termJSON => {
+        termJSON.topic = this.computedMaxProbTopic(termJSON.prob)
+      })
+      console.log(termsProbs)
+      return termsProbs
+     
     },
+    // 同一字在不同主題間的比較，但不需要使用
+//    baseTopicTerms () {
+//      let termsProbs = Array.from(Object.create(this.ldaNW))
+//      
+//      let output = []
+//      termsProbs.forEach((item, i) => {
+//        if (!this.topTerms[this.ldaVoc[i]]) {
+//          return false
+//        }
+//        
+//        let sum = item.reduce((a,b) => a + b, 0)
+//
+//        output.push({
+//          prob: item.map(p => p / sum),
+//          topic: this.computedMaxProbTopic(item),
+//          term: this.ldaVoc[i]
+//        })
+//      })
+//      //console.log(output)
+//      return output
+//    },
     topTerms () {
       let terms = {}
       for (let i = 0; i < this.topicTerms.length; i++) {
