@@ -8,6 +8,9 @@ var appMethods = {
         this.inputText = data.trim()
       } else {
         for (let key in data) {
+          if (data[key] === undefined) {
+            continue
+          } 
           this[key] = data[key]
         }
       }
