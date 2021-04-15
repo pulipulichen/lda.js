@@ -424,16 +424,30 @@ var appMethods = {
     //$('#topiccloud').html(text);
 
     topicText.sort((a, b) => {
+      
+      // 計算probSum
+      let len = a.length
+      if (len > 1) {
+        len = 1
+      }
+      
+      let aProbSum = 0
+      let bProbSum = 0
+      for (let i = len; i > 0; i--) {
+        aProbSum = aProbSum + a[(len - i)].prob
+        bProbSum = bProbSum + b[(len - i)].prob
+      }
+      
+      if (aProbSum > bProbSum) {
+        return -1
+      }
+      else if (bProbSum > aProbSum) {
+        return 1
+      }
+      
       for (let len = a.length, i = len; i > 0; i--) {
         let aItem = a[(len - i)]
         let bItem = b[(len - i)]
-        
-        if (aItem.prob > bItem.prob) {
-            return -1;
-        }
-        if (bItem.prob > aItem.prob) {
-            return 1;
-        }
         
         if (aItem.term > bItem.term) {
             return 1;
@@ -441,9 +455,8 @@ var appMethods = {
         if (bItem.term > aItem.term) {
             return -1;
         }
-        
-        return 0
       }
+      return 0
     })
 
     this.topicTerms = topicText
