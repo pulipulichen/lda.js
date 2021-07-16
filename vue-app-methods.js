@@ -512,6 +512,7 @@ var appMethods = {
 
     this.processOutputWait = false
     this.configChanged = false
+    this.analyseDate = new Date()
   },
   displayPercent: function (t) {
     t = Math.round(t * 1000000) / 10000
@@ -531,6 +532,42 @@ var appMethods = {
     }
     this.copyToClipboard(output.join('\n'))
   },
+  downloadTopicTable (topic, i) {
+    let data = []
+    data.push([`topic ${i} term`, `topic ${i} prob.`])
+    
+    for (let i = 0; i < this.configTopN; i++) {
+      let {term, prob} = topic[i]
+      prob = prob / 10000
+      data.push([`${term}`, `${prob}`])
+    }
+    
+    var wb = XLSX.utils.book_new();
+
+    wb.SheetNames.push("Topic2Term")
+    wb.Sheets["Topic2Term"] = this.aoa_to_sheet(data)
+
+
+    var wbout = XLSX.write(wb, {bookType: 'ods', type: 'binary'});
+    let filename = 'LDA-Topic-' + i + '_' + (this.analyseDate).mmddhhmm() + '.ods'
+    saveAs(new Blob([this.s2ab(wbout)],{type:"application/octet-stream"}), filename)
+    //this.copyToClipboard(output.join('\n'))
+  },
+  aoa_to_sheet: function (data) {
+    data = data.map(row => {
+      return row.map(cell => {
+        if (typeof(cell) !== 'string') {
+          return cell
+        }
+        if (cell.length > 1000) {
+          cell = cell.slice(0, 1000) + '...'
+        }
+        return cell
+      })
+    })
+    
+    return XLSX.utils.aoa_to_sheet(data)
+  },
   copyToClipboard: function (str) {
     const el = document.createElement('textarea');
     el.value = str;
@@ -549,10 +586,10 @@ var appMethods = {
     return arr.indexOf(Math.max(...arr));
   },
   downloadTopicTerms: function () {
-    let header = ['term', 'match']
+    let header = ['term', 'match_topic']
 
     this.topicTerms.forEach((t, i) => {
-      header.push('T' + (i + 1))
+      header.push('Topic ' + (i + 1))
     })
 
     let data = [header]
@@ -574,18 +611,18 @@ var appMethods = {
 
 
     wb.SheetNames.push("Topic2Term")
-    wb.Sheets["Topic2Term"] = XLSX.utils.aoa_to_sheet(data)
+    wb.Sheets["Topic2Term"] = this.aoa_to_sheet(data)
 
 
     var wbout = XLSX.write(wb, {bookType: 'ods', type: 'binary'});
-    let filename = 'LDA-Topic2Term_' + (new Date()).mmddhhmm() + '.ods'
+    let filename = 'LDA-Topic2Term_' + (this.analyseDate).mmddhhmm() + '.ods'
     saveAs(new Blob([this.s2ab(wbout)],{type:"application/octet-stream"}), filename)
   },
   downloadTopicDocument: function () {
-    let header = ['id', 'document', 'match']
+    let header = ['id', 'document', 'match_topic']
 
     this.topicTerms.forEach((t, i) => {
-      header.push('T' + (i + 1))
+      header.push('Topic ' + (i + 1))
     })
 
     let data = [header]
@@ -608,11 +645,11 @@ var appMethods = {
 
 
     wb.SheetNames.push("Topic2Doc")
-    wb.Sheets["Topic2Doc"] = XLSX.utils.aoa_to_sheet(data)
+    wb.Sheets["Topic2Doc"] = this.aoa_to_sheet(data)
 
 
     var wbout = XLSX.write(wb, {bookType: 'ods', type: 'binary'});
-    let filename = 'LDA-Topic2Doc_' + (new Date()).mmddhhmm() + '.ods'
+    let filename = 'LDA-Topic2Doc_' + (this.analyseDate).mmddhhmm() + '.ods'
     saveAs(new Blob([this.s2ab(wbout)],{type:"application/octet-stream"}), filename)
   },
   downloadConfiguration: function () {

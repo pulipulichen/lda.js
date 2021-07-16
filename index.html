@@ -139,23 +139,31 @@
                 </div>
 
                 <div class="field">
-                  <button type="button"
-                          class="ui icon button"
-                          v-on:click="drawWordCloud(topic)">
-                    <i class="cloud icon"></i>
-                  </button>
-                  <button type="button"
-                          class="ui icon button"
-                          v-on:click="copyTable(topic)">
-                    <i class="copy icon"></i>
-                  </button>
-                  <!--
-                  <button type="button"
-                          class="ui icon button"
-                          v-on:click="copyTopic(topic)">
-                    <i class="copy icon"></i>
-                  </button>
-                  -->
+                  <div class="ui buttons">
+                    <button type="button"
+                            class="ui icon button"
+                            v-on:click="drawWordCloud(topic)">
+                      <i class="cloud icon"></i>
+                    </button>
+                    <button type="button"
+                            class="ui icon button"
+                            v-on:click="copyTable(topic)">
+                      <i class="copy icon"></i>
+                    </button>
+                    <button type="button"
+                            class="ui icon button"
+                            v-on:click="downloadTopicTable(topic, (i+1))">
+                      <i class="save icon"></i>
+                    </button>
+                    <!--
+                    <button type="button"
+                            class="ui icon button"
+                            v-on:click="copyTopic(topic)">
+                      <i class="copy icon"></i>
+                    </button>
+                    -->
+                  </div>
+                    
                 </div>
               </div>
 

@@ -28,5 +28,6 @@ var appData = {
     termSortOrder: null,
     progressPercentage: 0,
     ldaNW: [],
-    ldaVoc: []
+    ldaVoc: [],
+    analyseDate: null
   }
